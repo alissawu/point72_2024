@@ -17,22 +17,12 @@ manhattan_stops = pd.read_csv('point72_2024/backend/utils/data/manhattan_stops.c
 
 df['ARREST_DATE'] = pd.to_datetime(df['ARREST_DATE'], format='%m/%d/%Y', errors='coerce')
 
-df.head()
-
 df_filtered = df[(df['ARREST_PRECINCT'] >= 1.0) & (df['ARREST_PRECINCT'] <= 34.0)]
-
-df_filtered
 
 df_filtered = df_filtered.dropna(subset=['ARREST_DATE'])
 df_filtered = df_filtered[df_filtered['ARREST_DATE'].dt.year > 2020]
 df_filtered = df_filtered.sort_values(by='ARREST_DATE')
 df_filtered = df_filtered.reset_index(drop=True)
-
-df_filtered
-
-df_filtered["OFNS_DESC"].unique()
-
-pivot_df.size
 
 crime_class_mapping = {
     'CRIMINAL MISCHIEF': 'Class D Felony',
@@ -190,13 +180,7 @@ def calculate_precinct_weekly_safety_scores(df, crime_class_mapping, crime_weigh
     return pd.DataFrame(scores)
 
 # Assuming df, crime_to_felony, and crime_weights are defined and available
-# Example usage
 weekly_precinct_safety_scores = calculate_precinct_weekly_safety_scores(df_filtered, crime_class_mapping, crime_weights)
-print(weekly_precinct_safety_scores)
-
-weekly_precinct_safety_scores[weekly_precinct_safety_scores['Precinct'] == 1.0]
-
-import pandas as pd
 
 def calculate_and_compare_safety_scores(df, crime_class_mapping, crime_weights):
     """
@@ -253,8 +237,4 @@ def calculate_and_compare_safety_scores(df, crime_class_mapping, crime_weights):
     return scores_df
 
 # Assuming df, crime_to_felony, and crime_weights are defined and available
-# Example usage
 weekly_precinct_safety_scores = calculate_and_compare_safety_scores(df_filtered, crime_class_mapping, crime_weights)
-print(weekly_precinct_safety_scores)
-
-weekly_precinct_safety_scores[weekly_precinct_safety_scores['Precinct'] == 1.0]

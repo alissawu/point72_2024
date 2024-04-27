@@ -9,6 +9,7 @@ Original file is located at
 
 import pandas as pd
 import regex as re
+import os
 
 def update_precinct_crime_data(crime_data_dict, file_path, crimes_of_interest, precinct_pattern="cs-en-us-(\d+pct)"):
     """
@@ -34,8 +35,6 @@ def update_precinct_crime_data(crime_data_dict, file_path, crimes_of_interest, p
             precinct = additional_precinct_match.group(1)
         else:
             precinct = "unknown_precinct"
-
-import os
 
 def auto_update_crime_data(base_path, crimes_of_interest, start=1, end=34):
     """
@@ -72,8 +71,6 @@ crimes_of_interest = ['Murder', 'Rape', 'Robbery', 'Fel. Assault', 'Burglary', '
 # Automatically update the crime data dictionary with all precinct data from 001 to 034
 all_crime_data = auto_update_crime_data(base_path, crimes_of_interest)
 
-all_crime_data
-
 crime_class_mapping = {
     'Murder' : 'Class A Felony',
     'Rape' : 'Class B Felony',
@@ -100,12 +97,10 @@ crime_weights = {
 stops_file_path = 'point72_2024/backend/utils/data/manhattan_stops.csv'
 
 stops_df = pd.read_csv(stops_file_path)
-stops_df
 
 columns = ['stop_name', 'stop_lat', 'stop_lon']
 
 stops_df = stops_df[columns]
-stops_df
 
 # Load the Manhattan stops data
 stops_df = pd.read_csv('point72_2024/backend/utils/data/manhattan_stops.csv')
@@ -128,9 +123,6 @@ for index, row in stops_df.iterrows():
     if precinct in all_crime_data:
         for crime in crime_types:
             stops_df.at[index, crime] = all_crime_data[precinct].get(crime, 0)
-
-# Now stops_df has new columns for each crime type, with crime data for each stop
-print(stops_df.head())
 
 def calculate_safety_scores(precinct_crimes, crime_class_mapping, crime_weights):
     """
@@ -160,6 +152,4 @@ def calculate_safety_scores(precinct_crimes, crime_class_mapping, crime_weights)
     return precinct_scores
 
 safety_scores = calculate_safety_scores(all_crime_data, crime_class_mapping, crime_weights)
-
-safety_scores
 
