@@ -25,7 +25,6 @@ def get_station_data():
     fetched_data = metrics.get_live_data()
     start_station = fetched_data[fetched_data["station"] == start_station]
     end_station = fetched_data[fetched_data["station"] == end_station]
-    print(start_station["safety_prior"])
     response_data = [
         {"safety": start_station["safety_prior"].values[0]},
         {"safety": end_station["safety_prior"].values[0]},
