@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import random
+from backend import metrics
 
 app = Flask(__name__)
 
@@ -11,6 +12,7 @@ def index():
 
 @app.route("/live-station-data")
 def live_station_data():
+    """
     new_str = "taig " + str(random.randint(1, 100))
     data = [
         {
@@ -27,6 +29,9 @@ def live_station_data():
             "overall": random.randint(0, 100),
         },
     ]
+    """
+    data = metrics.get_live_data().to_dict("records")
+    print(len(data))
     return jsonify(data)
 
 
