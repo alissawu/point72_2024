@@ -31,26 +31,20 @@
         #infoPanel {
             position: absolute;
             bottom: 10px;
-            /* Position it 10px up from the bottom */
             left: 10px;
-            /* Align it 10px from the left */
             background: rgba(255, 255, 255, 0.8);
-            /* Semi-transparent white */
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
             width: 300px;
             z-index: 1000;
-            /* Ensures it is above the map */
         }
 
         #infoPanel input[type="text"],
         #infoPanel button {
             width: 100%;
-            /* Full width of the panel */
             padding: 10px;
             margin-top: 5px;
-            /* Spacing above each input */
         }
 
         #infoPanel button {
@@ -67,15 +61,6 @@
 
         #results {
             margin-bottom: 10px;
-            /* Add space below the results before the inputs */
-        }
-
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            left: 0;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
@@ -95,7 +80,7 @@
     <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <style>
-        #map_f6b63d8453eaf02da0bf4f955faf68c8 {
+        #map {
             position: relative;
             width: 100.0%;
             height: 100.0%;
@@ -113,7 +98,7 @@
 <body>
     <div id="header">Accessibility and Safety in Manhattan Subway Stations</div>
 
-    <div class="folium-map" id="map_f6b63d8453eaf02da0bf4f955faf68c8"></div>
+    <div class="folium-map" id="map"></div>
 
     <div id="infoPanel">
         <label for="start">Start:</label>
@@ -153,7 +138,7 @@
 
 
     var map = L.map(
-        "map_f6b63d8453eaf02da0bf4f955faf68c8",
+        "map",
         {
             center: [40.7831, -73.9712],
             crs: L.CRS.EPSG3857,
@@ -164,7 +149,7 @@
     );
 
 
-    var tile_layer_43d96607db4a6768e7a4208e4eb81093 = L.tileLayer(
+    var tile_layer = L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
         { "attribution": "CartoDB", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false }
     ).addTo(map);
@@ -199,12 +184,21 @@
             .then(response => response.json())
             .then(data => {
                 data.forEach(station => {
-                    var markerId = 'marker_' + station.name;
-                    var icon = L.AwesomeMarkers.icon({
+                    var markerId = 'marker_' + station.station;
+
+                    var color;
+                    if (station.overall <= 33) {
+                        color = "red";
+                    } else if (station.overall <= 66) {
+                        color = "orange";
+                    } else {
+                        color = "green";
+                    }
+                    icon = L.AwesomeMarkers.icon({
                         "extraClasses": "fa-rotate-0",
                         "icon": "train",
                         "iconColor": "white",
-                        "markerColor": "blue",
+                        "markerColor": color,
                         "prefix": "fa"
                     });
 
@@ -232,14 +226,23 @@
     }
 
     function createPopupContent(station) {
+        const elevatorAvailability = station.elevators - station.elevators_out;
+        const escalatorAvailability = station.escalators - station.escalators_out;
+
         var htmlContent = `<div>
-        <h4>${station.name}</h4>
-        <p><strong>Lines:</strong> ${station.lines}</p>
-        <label for="more-info-${station.id}">More Info:</label>
-        <select id="more-info-${station.id}">
-            <option value="tracks">Structure: ${station.structure}</option>
-            <option value="zone">Borough: ${station.borough}</option>
-        </select>
+        <h4>${station.station}</h4>
+        <h5>Overall Metric: ${station.overall}</h5>
+        <p><strong>Safety:</strong></p>
+        <ul>
+            <li><strong>Metric:</strong> ${station.safety_prior}</li>
+            <li><strong>Weekly Prediction:</strong> ${station.safety_pred}</li>
+        </ul>
+        <p><strong>Accessibility:</strong></p>
+        <ul>
+            <li><strong>Elevators:</strong> ${elevatorAvailability}/${station.elevators} available</li>
+            <li><strong>Escalators:</strong> ${escalatorAvailability}/${station.escalators} available</li>
+        </ul>
+        <p><strong>Crowd Prediction:</strong> ${station.ridership_pred}</p> 
     </div>`;
         return htmlContent;
     }

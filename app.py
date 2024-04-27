@@ -14,13 +14,17 @@ def live_station_data():
     new_str = "taig " + str(random.randint(1, 100))
     data = [
         {
-            "name": new_str,
-            "lines": "ABC",
-            "id": "NA",
-            "structure": "subway",
-            "borough": "M",
+            "station": new_str,
+            "escalators": random.randint(0, 100),
+            "elevators": random.randint(0, 100),
+            "escalators_out": random.randint(0, 100),
+            "elevators_out": random.randint(0, 100),
+            "ridership_pred": random.randint(0, 100),
+            "safety_prior": random.randint(0, 100),
+            "safety_pred": "High",
             "latitude": random.uniform(40, 41),
             "longitude": random.uniform(-74, -73),
+            "overall": random.randint(0, 100),
         },
     ]
     return jsonify(data)
