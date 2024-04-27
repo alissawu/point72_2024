@@ -1,39 +1,35 @@
-Project Introduction: Data-Driven Solutions to NYC MTA Issues 
-Data limitations
-Real-time data is limited, we take the most recent data available
-for the e2e, it’s x hours delayed
-Methodologies
-API to get e2e functionality
-Flask on the backend integrated w Folium for the visuals, html on the frontend
-geoJSON overlay <- to prevent the entire html reloading, since the map is static but the station rendering changes
-Overview of analysis
-results
-Overview
+<h1>Project Introduction: Data-Driven Solutions to NYC MTA Issues</h1>
+
+## Overview
 New York City’s subway system is a cornerstone of the city's infrastructure, yet it presents significant challenges that impact its diverse population of users, from daily commuters to visitors. Our project addresses critical issues identified through scientific analysis and user studies: accessibility, safety, and crowding. By leveraging real-time data and innovative technologies, we aim to create a more inclusive, safe, and efficient subway experience for all.
-Accessibility: Elevator Availability and System Age
+
+## Accessibility: Elevator Availability and System Age
 Scientific research and user reports highlight the NYC subway’s aging infrastructure as a major barrier to accessibility. Almost one out of 15 New Yorkers has an ambulatory disability, but only 27% of NYC’s 472 stations are considered accessible under the Americans with Disabilities Act – a large portion lack basic accessibility features like elevators, ramps, and tactile navigation aids, leaving them inaccessible to people with disabilities, seniors, and others with mobility challenges. Commonly considered alternatives, such as Uber, don’t address the accessibility gap – Uber is most densely used in wealthier areas with already robust public transit options, leaving behind lower-income and less accessible areas. Our project proposes a real-time elevator status feature, which will provide instant updates on elevator availability and service disruptions, thereby enhancing the reliability of travel plans for those who depend on these amenities.
-Safety: Crime Mapping for Informed Commuting Decisions
+
+## Safety: Crime Mapping for Informed Commuting Decisions
 While NYC’s crime rates are historically low, there has been a recent uptick in high-profile violent incidents that have raised public concern, particularly among vulnerable groups such as women, minorities, and the elderly. A Cornell study found that  85% of U.S. women have changed their travel routes to avoid harassment and assault. Moreover, increased awareness and fears about crime, potentially due to increased coverage and Mayor Adams’ emphasis on crime-fighting, has had tangible impacts on daily life, with more New Yorkers expressing reluctance to use public transit. Our crime mapping tool will utilize precinct-level crime data to inform users of potential safety risks in specific areas. This proactive approach empowers commuters to avoid higher-risk stations, enhancing their sense of security and control over their travel environment.
-Crowdedness: Tackling Overcrowding with Real-Time Data
+
+## Crowdedness: Tackling Overcrowding with Real-Time Data
 The NYC subway system is characterized by high passenger densities, particularly during rush hours. This results in uncomfortable conditions for riders and can increase the likelihood of delays and disruptions. Excessive crowding also can cause delays in train departures as passengers struggle to board. The delays are exacerbated by the need to close train doors multiple times to accommodate all passengers. Real-time data on ridership and transfers can significantly mitigate these issues by enabling better distribution of passengers and reducing peak-time pressure. Our project will provide users with dynamic information about crowded stations and suggest alternative routes or less crowded travel times, improving overall travel comfort and efficiency.
 The Need for a Data-Driven Approach
 The issues of accessibility, safety, and crowding in the NYC subway system are well-documented in various studies, which highlight the need for a strategic overhaul based on real-time, data-driven solutions. By integrating the insights from these studies with advanced technology, our project addresses these critical issues head-on, aiming to transform the NYC subway into a more accessible, safe, and user-friendly system.
-Methodologies
+
+## Methodologies
 We leveraged a Flask-based backend, integrated with the Folium library to handle map-based data visualization. The website handles data stream requests to the backend using Flask routes. One route serves the initial HTML map page, while another dynamically fetches and returns live data. The use of AJAX in the Flask framework allows for async data updates, which is essential for rendering dynamic components and preventing complete page reloads every time we update data. Folium has robust mapping capabilities, which works well with our complex geographical data and our interactive goals. In addition, it is highly compatible with GeoJSON, which we used for detailed mapping and visualization.
 The user interface is constructed with html, which handles inputs like selecting start and end stations. That data is then sent to and handled by the server, which triggers specific Flask routes that process and respond with safety and accessibility information, enabling a responsive and intuitive design.
 
-Accessibility
+## Accessibility
 When examining the New York subway system, a significant issue that came to light was its limited accessibility for individuals with disabilities. Many stations lack essential facilities like escalators and elevators, and even those that are equipped frequently experience outages, further complicating mobility within the stations. Furthermore, certain stations are prone to high levels of crowding, presenting additional health risks to those with disabilities. To address these challenges, we developed an accessible website that tracks the real-time availability of elevators and escalators and provides updates on crowding levels at various stations. This platform leverages data from the Metropolitan Transportation Authority (MTA), which includes detailed information on current elevator outages and station ridership patterns. Our website enables individuals with disabilities to plan their routes more effectively, enhancing their ability to navigate New York City safely and with greater ease.
-Safety metric
+## Safety metric
 In developing the safety metric, the model incorporated several key factors to calculate a safety index for each precinct in Manhattan. Initially, crimes were categorized into specific classes ranging from class A felonies to class C misdemeanors. Each class was assigned a weight reflecting its severity: Class A Felony (10), Class B Violent Felony (9), Class B Felony (8), Class C Felony (7), Class D Felony (6), Class E Felony (5), Class A Misdemeanor (3), Class B Misdemeanor (2), Class C Misdemeanor (1), and Unspecified (0.5) — the latter denoting incidents with ambiguous or minimal details regarding the crime classification. These weighted classifications were then used to compute a weekly safety score for each precinct. This score was normalized by comparing it to the previous week’s score and was utilized as a baseline for regression analysis to forecast future safety levels. Additionally, the model took into account the recent crime data to provide an immediate assessment of current safety conditions.
-Ridership
+## Ridership
 To assess crowding within train stations, we utilized a dataset from the Metropolitan Transportation Authority (MTA) that offers hourly updates on passenger counts for trains as they traverse specific stations. This metric is instrumental in predicting train crowding levels at various stations and times, thereby enabling us to provide targeted recommendations. Such advice is particularly valuable for individuals with disabilities and those seeking to avoid peak congestion, assisting them in planning their travel more effectively. The dataset, which dates back to the beginning of 2022, is employed to train an autoregression model. This model is designed to forecast future ridership trends, allowing us to offer commuters more accurate and timely estimates of subway crowding levels.
 Autoregression models
-Data Limitations
+## Data Limitations
 Our project faced two significant data limitations that impacted our analytical capabilities. Firstly, the ridership streaming data was delayed by two weeks, making it difficult for us to implement a real-time data pipeline because our regression models could only be updated biweekly with the latest data. This lag not only complicates the training process but also limits the effectiveness of the model when scaling. Secondly, the arrest data was available only on a weekly basis and also was not updated instantly in real-time.While we had access to comprehensive historical arrest records from 2000 to 2023, the absence of real-time data flow posed challenges in dynamically updating our safety indexes. We managed these limitations by using the weekly updates to calculate current safety indexes and compare them against historical safety averages. Additionally, we employed historical data to forecast next week’s safety scores at specific stations.
-Social Impact and Commitment to Equity
+## Social Impact and Commitment to Equity
 Our project is deeply committed to social equity. We believe that every individual can navigate NYC with ease and safety. By improving the subway system's accessibility, security, and efficiency, we’re working towards a more inclusive urban environment where public transit is truly public, serving the needs of all city dwellers and visitors regardless of age, mobility, or socioeconomic status.
-Conclusion
+## Conclusion
 Improving the safety and accessibility of NYC’s subway system is an important advancement in making metropolitan transportation fit for the challenges of a diverse 21st-century megacity. Through targeted improvements informed by scientific research and real-time data, we hope to provide a robust framework that can significantly enhance the daily commuting experience, making it safer, more accessible, and less stressful for millions of New Yorkers. This project not only aims to upgrade a critical piece of urban infrastructure but also to reaffirm the city's commitment to diversity, inclusion, and equal access for all its residents and visitors.
 
 
