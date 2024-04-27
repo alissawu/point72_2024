@@ -12,9 +12,9 @@ from statsmodels.tsa.ar_model import AutoReg
 import matplotlib.pyplot as plt
 import ts
 
-df = pd.read_csv("point72_2024/backend/utils/data/crime_data/nypd_arrests_data_filtered.csv")
-manhattan_stops = pd.read_csv('point72_2024/backend/utils/data/manhattan_stops.csv')
-
+df = pd.read_csv("/Users/zacharygin/Desktop/point72_2024/backend/utils/data/crime_data/nypd_arrests_data_filtered.csv")
+manhattan_stops = pd.read_csv('/Users/zacharygin/Desktop/point72_2024/backend/utils/data/manhattan_stops_with_precinct.csv')
+print(manhattan_stops)
 df['ARREST_DATE'] = pd.to_datetime(df['ARREST_DATE'], format='%m/%d/%Y', errors='coerce')
 
 df_filtered = df[(df['ARREST_PRECINCT'] >= 1.0) & (df['ARREST_PRECINCT'] <= 34.0)]
@@ -127,7 +127,7 @@ def normalize_scores(precinct_scores):
 df_filtered['Felony_Class'] = df_filtered['OFNS_DESC'].map(crime_class_mapping)
 
 # Replace NaN with 'Unspecified' if some offenses are not covered in the mapping
-df_filtered['Felony_Class'].fillna('Unspecified', inplace=True)
+df_filtered['Felony_Class'] = df_filtered['Felony_Class'].fillna('Unspecified')
 
 # Map the Felony_Class to weights
 df_filtered['Crime_Weight'] = df_filtered['Felony_Class'].map(crime_weights)
@@ -155,6 +155,11 @@ def calculate_precinct_weekly_safety_scores(df, crime_class_mapping, crime_weigh
     """
     # Ensure ARREST_DATE is in datetime format
     df['ARREST_DATE'] = pd.to_datetime(df['ARREST_DATE'])
+    if df_filtered['ARREST_DATE'].isnull().any():
+        print("Missing date data detected.")
+        # Handle or fill missing dates here, depending on the requirements.
+        # For instance, you might want to drop these rows:
+        df_filtered = df_filtered.dropna(subset=['ARREST_DATE'])
 
     # Group by week, precinct, and crime type, counting occurrences
     weekly_crimes_by_precinct = df.groupby([pd.Grouper(key='ARREST_DATE', freq='W'), 'ARREST_PRECINCT', 'OFNS_DESC']).size().unstack(fill_value=0)

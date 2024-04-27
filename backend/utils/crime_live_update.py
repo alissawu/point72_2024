@@ -36,6 +36,22 @@ def update_precinct_crime_data(crime_data_dict, file_path, crimes_of_interest, p
         else:
             precinct = "unknown_precinct"
 
+    # Load the Excel file, skip headers and footers, and assume data starts after 'Crime Type' column
+    data = pd.read_excel(file_path, sheet_name='CompStat_1', skiprows=10, usecols="A,C", names=['Crime Type', 'Week to Date 2024'])
+
+    # Drop rows with NaN values as these don't contain crime data
+    data_cleaned = data.dropna()
+
+    # Filter out the rows to include only the crime types specified
+    data_filtered = data_cleaned[data_cleaned['Crime Type'].isin(crimes_of_interest)]
+
+    # Drop any potential duplicate rows, keeping the first instance (relevant for 'TOTAL')
+    data_filtered = data_filtered.drop_duplicates(subset=['Crime Type'], keep='first')
+
+    # Update the dictionary with the new data
+    crime_data_dict[precinct] = data_filtered.set_index('Crime Type').to_dict()['Week to Date 2024']
+
+
 def auto_update_crime_data(base_path, crimes_of_interest, start=1, end=34):
     """
     Automatically updates the crime data dictionary for all precinct files within a range.
@@ -55,15 +71,17 @@ def auto_update_crime_data(base_path, crimes_of_interest, start=1, end=34):
         # Construct the file name with leading zeros
         file_name = f"cs-en-us-{str(i).zfill(3)}pct.xlsx"
         file_path = os.path.join(base_path, file_name)
+        # print(file_name)
 
         # Check if the file exists before trying to process it
         if os.path.exists(file_path):
+            # print(file_path)
             update_precinct_crime_data(crime_data_dict, file_path, crimes_of_interest)
 
     return crime_data_dict
 
 # Define the base path where the Excel files are located
-base_path = 'point72_2024/backend/utils/data/crime_data/'
+base_path = '/point72_2024/backend/utils/data/crime_data'
 
 # Define the crimes we're interested in
 crimes_of_interest = ['Murder', 'Rape', 'Robbery', 'Fel. Assault', 'Burglary', 'Gr. Larceny', 'G.L.A.', 'TOTAL']
@@ -94,16 +112,8 @@ crime_weights = {
     'Unspecified': 0.5  # Assigning a nominal weight for unspecified categories
 }
 
-stops_file_path = 'point72_2024/backend/utils/data/manhattan_stops.csv'
-
-stops_df = pd.read_csv(stops_file_path)
-
-columns = ['stop_name', 'stop_lat', 'stop_lon']
-
-stops_df = stops_df[columns]
-
-# Load the Manhattan stops data
-stops_df = pd.read_csv('point72_2024/backend/utils/data/manhattan_stops.csv')
+# Load the Manhattan stops data point72_2024/backend/utils/data/manhattan_stops.csv
+stops_df = pd.read_csv('/point72_2024/backend/utils/data/manhattan_stops_with_precinct.csv')
 
 # Normalize precinct identifiers in stops_df to match the expected keys in all_crime_data
 # Ensure all precinct numbers are strings and possibly add 'pct' if needed
@@ -148,8 +158,8 @@ def calculate_safety_scores(precinct_crimes, crime_class_mapping, crime_weights)
             safety_score += int(count) * weight  # Calculate the score and accumulate
 
         precinct_scores[precinct] = safety_score
-
-    return precinct_scores
+    new_keys_precinct_scores = {int(k[:-3]): v for k, v in precinct_scores.items()}
+    return new_keys_precinct_scores
 
 safety_scores = calculate_safety_scores(all_crime_data, crime_class_mapping, crime_weights)
-
+print(safety_scores)
