@@ -92,13 +92,6 @@ def auto_update_crime_data(base_path, crimes_of_interest, start=1, end=34):
     return crime_data_dict
 
 
-# Define the base path where the Excel files are located
-
-
-# Assuming all_crime_data is already filled and keys are like '032pct'
-# We don't need to change dictionary keys if they are already like '019pct'
-
-
 def calculate_safety_scores():
     """
     Calculates safety scores for each precinct based on crime data, crime classifications, and crime weights.
