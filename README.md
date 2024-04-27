@@ -1,4 +1,4 @@
-<h1>Project Introduction: Data-Driven Solutions to NYC MTA Issues</h1>
+<h1>Humanizing the MTA: Data-Driven Solutions to NYC MTA Human-Centric Issues</h1>
 
 ## Overview
 New York City’s subway system is a cornerstone of the city's infrastructure, yet it presents significant challenges that impact its diverse population of users, from daily commuters to visitors. Our project addresses critical issues identified through scientific analysis and user studies: accessibility, safety, and crowding. By leveraging real-time data and innovative technologies, we aim to create a more inclusive, safe, and efficient subway experience for all.
