@@ -11,7 +11,9 @@ While NYC’s crime rates are historically low, there has been a recent uptick i
 
 ## Crowdedness: Tackling Overcrowding with Real-Time Data
 The NYC subway system is characterized by high passenger densities, particularly during rush hours. This results in uncomfortable conditions for riders and can increase the likelihood of delays and disruptions. Excessive crowding also can cause delays in train departures as passengers struggle to board. The delays are exacerbated by the need to close train doors multiple times to accommodate all passengers. Real-time data on ridership and transfers can significantly mitigate these issues by enabling better distribution of passengers and reducing peak-time pressure. Our project will provide users with dynamic information about crowded stations and suggest alternative routes or less crowded travel times, improving overall travel comfort and efficiency.
+
 The Need for a Data-Driven Approach
+
 The issues of accessibility, safety, and crowding in the NYC subway system are well-documented in various studies, which highlight the need for a strategic overhaul based on real-time, data-driven solutions. By integrating the insights from these studies with advanced technology, our project addresses these critical issues head-on, aiming to transform the NYC subway into a more accessible, safe, and user-friendly system.
 
 ## Methodologies
