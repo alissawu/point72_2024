@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
-import random
 from backend import metrics
+import json
 
 app = Flask(__name__)
 
@@ -14,7 +14,6 @@ def index():
 def live_station_data():
 
     data = metrics.get_live_data().to_dict("records")
-    print(len(data))
     return jsonify(data)
 
 
@@ -23,11 +22,14 @@ def get_station_data():
     data = request.json
     start_station = data["start"]
     end_station = data["end"]
-    # Dummy data assuming you fetch real data based on station names
-    response_data = {
-        "start": {"safety": "High", "accessibility": "Wheelchair accessible"},
-        "end": {"safety": "Medium", "accessibility": "Not wheelchair accessible"},
-    }
+    fetched_data = metrics.get_live_data()
+    start_station = fetched_data[fetched_data["station"] == start_station]
+    end_station = fetched_data[fetched_data["station"] == end_station]
+    print(start_station["safety_prior"])
+    response_data = [
+        {"safety": start_station["safety_prior"].values[0]},
+        {"safety": end_station["safety_prior"].values[0]},
+    ]
     return jsonify(response_data)
 
 

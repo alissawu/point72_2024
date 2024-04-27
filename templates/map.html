@@ -122,10 +122,8 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('results').innerHTML = `
-                    <p><strong>Start Station Safety:</strong> ${data.start.safety}</p>
-                    <p><strong>Start Station Accessibility:</strong> ${data.start.accessibility}</p>
-                    <p><strong>End Station Safety:</strong> ${data.end.safety}</p>
-                    <p><strong>End Station Accessibility:</strong> ${data.end.accessibility}</p>
+                    <p><strong>Start Station Safety:</strong> ${data[0].safety}</p>
+                    <p><strong>End Station Safety:</strong> ${data[1].safety}</p>
                 `;
                 })
                 .catch(error => console.error('Error:', error));
@@ -234,7 +232,6 @@
         <p><strong>Safety:</strong></p>
         <ul>
             <li><strong>Metric:</strong> ${station.safety_prior}</li>
-            <li><strong>Weekly Prediction:</strong> ${station.safety_pred}</li>
         </ul>
         <p><strong>Accessibility:</strong></p>
         <ul>
