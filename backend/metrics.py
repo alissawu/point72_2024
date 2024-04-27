@@ -1,22 +1,24 @@
-from utils import accessibility, ridership, safety_hist, safety_real
+from .utils import accessibility
 import pandas as pd
 
 
 def get_live_data():
-    manhattan_stops = pd.read_csv("utils/data/manhattan_stops.csv")
+    manhattan_stops = pd.read_csv("backend/utils/data/manhattan_stops.csv")
+    manhattan_stops.rename(
+        columns={
+            "Stop Name": "station",
+            "GTFS Longitude": "longitude",
+            "GTFS Latitude": "latitude",
+        },
+        inplace=True,
+    )
     accessibility_df = accessibility.outages()
-    print("FUCK")
-    ridership_df = ridership.ridership()
-    print("SHIT")
-    merged_df = pd.merge(
-        accessibility_df, ridership_df, on="station", how="outer"
+    final_df = pd.merge(
+        manhattan_stops, accessibility_df, on="station", how="outer"
     ).fillna(0)
-
-    manhattan_stops = pd.read_csv("/utils/data/manhattan_stops.csv")
-    final_df = pd.merge(merged_df, manhattan_stops, on="station", how="inner")
-
     return final_df
 
 
 if __name__ == "__main__":
-    print(get_live_data())
+    data = get_live_data()
+    print("72 St" in data["station"])
