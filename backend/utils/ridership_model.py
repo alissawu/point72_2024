@@ -6,9 +6,11 @@ import pickle
 
 
 def generate_data(timeframe):
-    manhattan_stops = pd.read_csv("utils/data/manhattan_stops.csv")
+    manhattan_stops = pd.read_csv("backend/utils/data/manhattan_stops.csv")
     manhattan_unique = manhattan_stops["Stop Name"].unique()
     current_time = datetime.now()
+
+    current_time = current_time - timedelta(hours=380)
 
     while True:
         current_time = current_time - timedelta(hours=1)
@@ -60,7 +62,7 @@ def generate_data(timeframe):
 
     consolidated_data = (
         expanded_data.groupby(["transit_timestamp", "station_complex"])
-        .agg({"ridership": "sum", "transfers": "sum"})
+        .agg({"ridership": "mean", "transfers": "mean"})
         .reset_index()
     )
 
@@ -74,7 +76,7 @@ def generate_data(timeframe):
 def generate_model():
 
     models_dict = {}
-    consolidated_data = generate_data(168)
+    consolidated_data = generate_data(30)
 
     for station in consolidated_data["station_complex"].unique():
         station_df = consolidated_data[consolidated_data["station_complex"] == station]

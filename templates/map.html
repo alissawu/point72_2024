@@ -188,11 +188,11 @@
 
                     var color;
                     if (station.overall <= 33) {
-                        color = "red";
+                        color = "green";
                     } else if (station.overall <= 66) {
                         color = "orange";
                     } else {
-                        color = "green";
+                        color = "red";
                     }
                     icon = L.AwesomeMarkers.icon({
                         "extraClasses": "fa-rotate-0",
@@ -223,6 +223,10 @@
     function createPopupContent(station) {
         const elevatorAvailability = station.elevators - station.elevators_out;
         const escalatorAvailability = station.escalators - station.escalators_out;
+        var crowd = station.ridership_pred;
+        if (crowd < 0) {
+            crowd = 0
+        }
 
         var htmlContent = `<div>
         <h4>${station.station}</h4>
@@ -234,8 +238,8 @@
         </ul>
         <p><strong>Accessibility:</strong></p>
         <ul>
-            <li><strong>Elevators:</strong> ${elevatorAvailability}/${station.elevators} available</li>
-            <li><strong>Escalators:</strong> ${escalatorAvailability}/${station.escalators} available</li>
+            <li><strong>Elevators:</strong> ${Math.abs(elevatorAvailability)}/${station.elevators} available</li>
+            <li><strong>Escalators:</strong> ${Math.abs(escalatorAvailability)}/${station.escalators} available</li>
         </ul>
         <p><strong>Crowd Prediction:</strong> ${station.ridership_pred}</p> 
     </div>`;

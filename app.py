@@ -12,24 +12,7 @@ def index():
 
 @app.route("/live-station-data")
 def live_station_data():
-    """
-    new_str = "taig " + str(random.randint(1, 100))
-    data = [
-        {
-            "station": new_str,
-            "escalators": random.randint(0, 100),
-            "elevators": random.randint(0, 100),
-            "escalators_out": random.randint(0, 100),
-            "elevators_out": random.randint(0, 100),
-            "ridership_pred": random.randint(0, 100),
-            "safety_prior": random.randint(0, 100),
-            "safety_pred": "High",
-            "latitude": random.uniform(40, 41),
-            "longitude": random.uniform(-74, -73),
-            "overall": random.randint(0, 100),
-        },
-    ]
-    """
+
     data = metrics.get_live_data().to_dict("records")
     print(len(data))
     return jsonify(data)

@@ -8,10 +8,13 @@ Original file is located at
 """
 
 import pandas as pd
-import regex as re
+import re
 import os
 
-def update_precinct_crime_data(crime_data_dict, file_path, crimes_of_interest, precinct_pattern="cs-en-us-(\d+pct)"):
+
+def update_precinct_crime_data(
+    crime_data_dict, file_path, crimes_of_interest, precinct_pattern="cs-en-us-(\d+pct)"
+):
     """
     Updates the provided crime data dictionary with 'Week to Date' crime data for the year 2024 from the given Excel file.
 
@@ -37,19 +40,27 @@ def update_precinct_crime_data(crime_data_dict, file_path, crimes_of_interest, p
             precinct = "unknown_precinct"
 
     # Load the Excel file, skip headers and footers, and assume data starts after 'Crime Type' column
-    data = pd.read_excel(file_path, sheet_name='CompStat_1', skiprows=10, usecols="A,C", names=['Crime Type', 'Week to Date 2024'])
+    data = pd.read_excel(
+        file_path,
+        sheet_name="CompStat_1",
+        skiprows=10,
+        usecols="A,C",
+        names=["Crime Type", "Week to Date 2024"],
+    )
 
     # Drop rows with NaN values as these don't contain crime data
     data_cleaned = data.dropna()
 
     # Filter out the rows to include only the crime types specified
-    data_filtered = data_cleaned[data_cleaned['Crime Type'].isin(crimes_of_interest)]
+    data_filtered = data_cleaned[data_cleaned["Crime Type"].isin(crimes_of_interest)]
 
     # Drop any potential duplicate rows, keeping the first instance (relevant for 'TOTAL')
-    data_filtered = data_filtered.drop_duplicates(subset=['Crime Type'], keep='first')
+    data_filtered = data_filtered.drop_duplicates(subset=["Crime Type"], keep="first")
 
     # Update the dictionary with the new data
-    crime_data_dict[precinct] = data_filtered.set_index('Crime Type').to_dict()['Week to Date 2024']
+    crime_data_dict[precinct] = data_filtered.set_index("Crime Type").to_dict()[
+        "Week to Date 2024"
+    ]
 
 
 def auto_update_crime_data(base_path, crimes_of_interest, start=1, end=34):
@@ -80,61 +91,15 @@ def auto_update_crime_data(base_path, crimes_of_interest, start=1, end=34):
 
     return crime_data_dict
 
+
 # Define the base path where the Excel files are located
-base_path = '/point72_2024/backend/utils/data/crime_data'
 
-# Define the crimes we're interested in
-crimes_of_interest = ['Murder', 'Rape', 'Robbery', 'Fel. Assault', 'Burglary', 'Gr. Larceny', 'G.L.A.', 'TOTAL']
-
-# Automatically update the crime data dictionary with all precinct data from 001 to 034
-all_crime_data = auto_update_crime_data(base_path, crimes_of_interest)
-
-crime_class_mapping = {
-    'Murder' : 'Class A Felony',
-    'Rape' : 'Class B Felony',
-    'Robbery' : 'Class D Felony',
-    'Fel. Assault' : 'Class B Felony',
-    'Burglary' : 'Class B Violet Felony',
-    'Gr. Larceny' : 'Class B Felony',
-    'G.L.A' : 'Class B Felony'
-}
-
-crime_weights = {
-    'Class A Felony': 10,
-    'Class B Violent Felony': 9,
-    'Class B Felony': 8,
-    'Class C Felony': 7,
-    'Class D Felony': 6,
-    'Class E Felony': 5,
-    'Class A Misdemeanor': 3,
-    'Class B Misdemeanor': 2,
-    'Class C Misdemeanor': 1,
-    'Unspecified': 0.5  # Assigning a nominal weight for unspecified categories
-}
-
-# Load the Manhattan stops data point72_2024/backend/utils/data/manhattan_stops.csv
-stops_df = pd.read_csv('/point72_2024/backend/utils/data/manhattan_stops_with_precinct.csv')
-
-# Normalize precinct identifiers in stops_df to match the expected keys in all_crime_data
-# Ensure all precinct numbers are strings and possibly add 'pct' if needed
-stops_df['Precinct'] = stops_df['Precinct'].astype(str).apply(lambda x: x.zfill(3) + 'pct' if not x.endswith('pct') else x)
-
-# Initialize columns for each crime type in the stops_df with default value of 0
-crime_types = ['Murder', 'Rape', 'Robbery', 'Fel. Assault', 'Burglary', 'Gr. Larceny', 'G.L.A.', 'TOTAL']
-for crime in crime_types:
-    stops_df[crime] = 0
 
 # Assuming all_crime_data is already filled and keys are like '032pct'
 # We don't need to change dictionary keys if they are already like '019pct'
 
-# Populate the crime data for each stop based on its precinct
-for index, row in stops_df.iterrows():
-    precinct = row['Precinct']
-    if precinct in all_crime_data:
-        for crime in crime_types:
-            stops_df.at[index, crime] = all_crime_data[precinct].get(crime, 0)
 
-def calculate_safety_scores(precinct_crimes, crime_class_mapping, crime_weights):
+def calculate_safety_scores():
     """
     Calculates safety scores for each precinct based on crime data, crime classifications, and crime weights.
 
@@ -148,18 +113,58 @@ def calculate_safety_scores(precinct_crimes, crime_class_mapping, crime_weights)
     """
     precinct_scores = {}
 
+    crime_class_mapping = {
+        "Murder": "Class A Felony",
+        "Rape": "Class B Felony",
+        "Robbery": "Class D Felony",
+        "Fel. Assault": "Class B Felony",
+        "Burglary": "Class B Violet Felony",
+        "Gr. Larceny": "Class B Felony",
+        "G.L.A": "Class B Felony",
+    }
+
+    crime_weights = {
+        "Class A Felony": 10,
+        "Class B Violent Felony": 9,
+        "Class B Felony": 8,
+        "Class C Felony": 7,
+        "Class D Felony": 6,
+        "Class E Felony": 5,
+        "Class A Misdemeanor": 3,
+        "Class B Misdemeanor": 2,
+        "Class C Misdemeanor": 1,
+        "Unspecified": 0.5,  # Assigning a nominal weight for unspecified categories
+    }
+    base_path = "backend/utils/data/crime_data"
+
+    # Define the crimes we're interested in
+    crimes_of_interest = [
+        "Murder",
+        "Rape",
+        "Robbery",
+        "Fel. Assault",
+        "Burglary",
+        "Gr. Larceny",
+        "G.L.A.",
+        "TOTAL",
+    ]
+
+    # Automatically update the crime data dictionary with all precinct data from 001 to 034
+    precinct_crimes = auto_update_crime_data(base_path, crimes_of_interest)
+
     for precinct, crimes in precinct_crimes.items():
         safety_score = 0
         for crime, count in crimes.items():
-            if crime == 'TOTAL':  # Skip the total count if present in the data
+            if crime == "TOTAL":  # Skip the total count if present in the data
                 continue
-            crime_class = crime_class_mapping.get(crime, 'Unspecified')  # Get the crime class or 'Unspecified'
-            weight = crime_weights.get(crime_class, 0.5)  # Get the weight for the crime class or 0.5 if not found
+            crime_class = crime_class_mapping.get(
+                crime, "Unspecified"
+            )  # Get the crime class or 'Unspecified'
+            weight = crime_weights.get(
+                crime_class, 0.5
+            )  # Get the weight for the crime class or 0.5 if not found
             safety_score += int(count) * weight  # Calculate the score and accumulate
 
         precinct_scores[precinct] = safety_score
     new_keys_precinct_scores = {int(k[:-3]): v for k, v in precinct_scores.items()}
     return new_keys_precinct_scores
-
-safety_scores = calculate_safety_scores(all_crime_data, crime_class_mapping, crime_weights)
-print(safety_scores)
