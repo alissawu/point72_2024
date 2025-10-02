@@ -8,8 +8,6 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return render_template("map.html")
-
-
 @app.route("/live-station-data")
 def live_station_data():
 
@@ -31,6 +29,12 @@ def get_station_data():
     ]
     return jsonify(response_data)
 
+@app.route("/test")
+def test():
+    return "Hello, world!"
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
